@@ -1,14 +1,22 @@
 from fastapi import FastAPI
-from app.database import engine, Base
+from app.database import engine, Base, SessionLocal
 from app.users import routes
+from app.users.services import initialize_default_roles
 
 # Create all database tables
 Base.metadata.create_all(bind=engine)
 
+# Initialize default roles
+db = SessionLocal()
+try:
+    initialize_default_roles(db)
+finally:
+    db.close()
+
 # Create FastAPI application
 app = FastAPI(
     title="User Registration API",
-    description="A simple user registration system",
+    description="A simple user registration system with role management",
     version="1.0.0"
 )
 
